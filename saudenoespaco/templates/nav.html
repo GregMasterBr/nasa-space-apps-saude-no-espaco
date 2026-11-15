@@ -1,0 +1,48 @@
+
+<header class="main-navbar">
+    <div class="container-fluid navbar-content">
+
+        <!-- BRAND -->
+        <a href="{% url 'home' %}" class="navbar-brand-custom">
+            <span class="brand-symbol">M</span>
+
+            <span class="brand-info">
+                <strong>AstroCare</strong>
+                <small>SPACE HEALTH INTELLIGENCE</small>
+            </span>
+        </a>
+
+        <!-- NAVIGATION -->
+        <nav class="navbar-links">
+
+            <a href="{% url 'home' %}" class="navbar-link active">
+                <span class="nav-icon">⌂</span>
+                <span>HOME</span>
+            </a>
+
+            <a href="{% url 'astronaut_index' %}" class="navbar-link">
+                <span class="nav-icon">◉</span>
+                <span>ASTRONAUTS</span>
+            </a>
+
+            <a href="{% url 'dashboard' %}" class="navbar-link">
+                <span class="nav-icon">▦</span>
+                <span>DASHBOARD</span>
+            </a>
+
+            <a href="{% url 'admin:index' %}" target="_blank"
+               class="navbar-link">
+                <span class="nav-icon">⚙</span>
+                <span>ADMIN</span>
+            </a>
+
+        </nav>
+
+        <!-- SYSTEM STATUS -->
+        <div class="navbar-system">
+            <span class="system-indicator"></span>
+            <span>SYSTEM ONLINE</span>
+        </div>
+
+    </div>
+</header>

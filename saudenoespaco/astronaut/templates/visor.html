@@ -1,0 +1,525 @@
+
+{% extends 'base_visor.html' %}
+{% load static %}
+
+{% block 'title' %}Mission HUD | MINDSPACE{% endblock %}
+
+{% block 'head' %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/visor.css' %}">
+{% endblock %}
+
+{% block 'body' %}
+
+<main class="visor-page">
+
+    <!-- CAMPO DE VISÃO -->
+    <section class="visor-scene">
+
+        <div class="visor-glass">
+
+            <!-- MARCAS ÓPTICAS -->
+            <div class="visor-reticle">
+                <span class="reticle-top"></span>
+                <span class="reticle-bottom"></span>
+                <span class="reticle-left"></span>
+                <span class="reticle-right"></span>
+                <span class="reticle-center"></span>
+            </div>
+
+            <!-- CABEÇALHO DO HUD -->
+            <header class="visor-topbar">
+
+                <div class="mission-identity">
+                    <div class="mission-symbol">M</div>
+
+                    <div>
+                        <span class="hud-overline">MINDSPACE SYSTEM</span>
+                        <strong>MISSION HUD</strong>
+                    </div>
+                </div>
+
+                <div class="mission-status">
+                    <span class="status-light"></span>
+                    <span>TELEMETRY ACTIVE</span>
+                </div>
+
+                <div class="visor-clock">
+                    <span class="hud-overline">LOCAL SYSTEM TIME</span>
+                    <strong id="visor-clock">--:--:--</strong>
+                </div>
+
+            </header>
+
+
+            <!-- CAMPO VISUAL CENTRAL -->
+            <div class="visual-field">
+
+                <div class="field-coordinate coordinate-left">
+                    <span>MISSION</span>
+                    <strong>INSPIRATION4</strong>
+                    <small>LOW EARTH ORBIT</small>
+                </div>
+
+                <div class="field-coordinate coordinate-right">
+                    <span>SUBJECT</span>
+                    <strong>
+                        {% if subject %}
+                            {{ subject.subject_code }}
+                        {% else %}
+                            ---
+                        {% endif %}
+                    </strong>
+                    <small>BIOMETRIC PROFILE</small>
+                </div>
+
+                <div class="central-mark">
+
+                    <div class="central-ring ring-one"></div>
+                    <div class="central-ring ring-two"></div>
+                    <div class="central-ring ring-three"></div>
+
+                    <div class="central-core">
+                        <span class="core-symbol">✦</span>
+                        <span class="core-label">MINDSPACE</span>
+                        <small>HEALTH MONITORING</small>
+                    </div>
+
+                </div>
+
+                <div class="field-bottom-label">
+                    <span class="field-line"></span>
+                    <span>EXTRAVEHICULAR VIEW INTERFACE</span>
+                    <span class="field-line"></span>
+                </div>
+
+            </div>
+
+
+            <!-- LINHA DE INFORMAÇÕES FIXAS -->
+            <div class="fixed-telemetry">
+
+                <div class="fixed-data">
+                    <span class="data-label">MISSION</span>
+                    <strong>I4</strong>
+                    <small>INSPIRATION4</small>
+                </div>
+
+                <div class="fixed-data">
+                    <span class="data-label">PARTICIPANT</span>
+                    <strong>
+                        {% if subject %}
+                            {{ subject.subject_code }}
+                        {% else %}
+                            ---
+                        {% endif %}
+                    </strong>
+                    <small>RESEARCH SUBJECT</small>
+                </div>
+
+                <div class="fixed-data">
+                    <span class="data-label">DATA SOURCES</span>
+                    <strong>02</strong>
+                    <small>OSD-569 / OSD-575</small>
+                </div>
+
+                <div class="fixed-data fixed-connection">
+                    <span class="data-label">DATABASE</span>
+                    <strong><i></i> CONNECTED</strong>
+                    <small>LOCAL DATA SYSTEM</small>
+                </div>
+
+            </div>
+
+
+            <!-- PAINEL INFERIOR -->
+            <section class="hud-console">
+
+                <div class="console-header">
+
+                    <div>
+                        <span class="hud-overline">BIOMETRIC DATA DISPLAY</span>
+                        <h1>Health telemetry</h1>
+                    </div>
+
+                    <div class="console-cycle">
+                        <span class="cycle-indicator"></span>
+                        <span>AUTO CYCLE</span>
+                    </div>
+
+                </div>
+
+
+                <div class="console-content">
+
+                    <!-- EXTREMIDADE ESQUERDA: STATUS -->
+                                
+                    <aside class="console-side console-left">
+
+                        <span class="data-label">MONITORING</span>
+
+                        <!-- MENTAL FATIGUE -->
+                        <div class="fatigue-monitor">
+
+                            <span class="fatigue-title">MENTAL FATIGUE</span>
+
+                            <div class="fatigue-indicators">
+
+                                {% for level in fatigue_levels %}
+                                    <div class="fatigue-indicator fatigue-{{ level.code }} {% if fatigue_status.code == level.code %}active{% endif %}">
+                                        <span class="fatigue-light"></span>
+                                        <span>{{ level.label }}</span>
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+
+                            <div class="fatigue-status">
+                                <span class="fatigue-status-label">CURRENT STATUS</span>
+                                <strong class="status-{{ fatigue_status.code }}">
+                                    {{ fatigue_status.label }}
+                                </strong>
+                                {% comment %} <small>SIMULATED DATA</small> {% endcomment %}
+                            </div>
+
+                        </div>
+
+                        <!-- ORIGINAL STATUS -->
+                        {% comment %} <div class="side-status">
+                            <span class="side-status-icon">◈</span>
+                            <div>
+                                <strong>LAB DATA</strong>
+                                <small>AVAILABLE</small>
+                            </div>
+                        </div> {% endcomment %}
+
+                        <div class="side-status">
+                            <span class="side-status-icon">⌁</span>
+                            <div>
+                                <strong>RECORDS</strong>
+                                <small>HISTORICAL</small>
+                            </div>
+                        </div>
+
+                        <div class="side-footer">
+                            <span>OSDR</span>
+                            <strong>NASA</strong>
+                        </div>
+
+                    </aside>
+
+
+
+                    <!-- ÁREA CENTRAL ROTATIVA -->
+                    <div class="console-main">
+
+                        <div class="slide-track" id="telemetry-slides">
+
+                            <!-- SLIDE 1: HEMOGRAMA -->
+                            <article class="telemetry-slide active"
+                                     data-study="OSD-569"
+                                     data-name="Complete Blood Count">
+
+                                <div class="slide-heading">
+                                    <div>
+                                        <span class="slide-index">01 / HEMATOLOGY</span>
+                                        <h2>Complete Blood Count</h2>
+                                    </div>
+
+                                    <span class="study-code">OSD-569</span>
+                                </div>
+
+                                <div class="metric-grid">
+
+                                    <div class="metric">
+                                        <span>HEMOGLOBIN</span>
+                                        <strong>—</strong>
+                                        <small>g/dL</small>
+                                    </div>
+
+                                    <div class="metric">
+                                        <span>LEUKOCYTES</span>
+                                        <strong>—</strong>
+                                        <small>cells/µL</small>
+                                    </div>
+
+                                    <div class="metric">
+                                        <span>PLATELETS</span>
+                                        <strong>—</strong>
+                                        <small>10³/µL</small>
+                                    </div>
+
+                                    <div class="metric">
+                                        <span>HEMATOCRIT</span>
+                                        <strong>—</strong>
+                                        <small>%</small>
+                                    </div>
+
+                                </div>
+
+                                <div class="slide-footer">
+                                    <span>COLLECTION TIMEPOINT: <strong>AGUARDANDO DADOS</strong></span>
+                                    <span>LABORATORY RECORD</span>
+                                </div>
+
+                            </article>
+
+
+                            <!-- SLIDE 2: PAINEL METABÓLICO -->
+                            <article class="telemetry-slide"
+                                     data-study="OSD-575"
+                                     data-name="Comprehensive Metabolic Panel">
+
+                                <div class="slide-heading">
+                                    <div>
+                                        <span class="slide-index">02 / METABOLIC PROFILE</span>
+                                        <h2>Metabolic Panel</h2>
+                                    </div>
+
+                                    <span class="study-code">OSD-575</span>
+                                </div>
+
+                                <div class="metric-grid">
+
+                                    <div class="metric">
+                                        <span>GLUCOSE</span>
+                                        <strong>—</strong>
+                                        <small>mg/dL</small>
+                                    </div>
+
+                                    <div class="metric">
+                                        <span>CREATININE</span>
+                                        <strong>—</strong>
+                                        <small>mg/dL</small>
+                                    </div>
+
+                                    <div class="metric">
+                                        <span>SODIUM</span>
+                                        <strong>—</strong>
+                                        <small>mmol/L</small>
+                                    </div>
+
+                                    <div class="metric">
+                                        <span>POTASSIUM</span>
+                                        <strong>—</strong>
+                                        <small>mmol/L</small>
+                                    </div>
+
+                                </div>
+
+                                <div class="slide-footer">
+                                    <span>COLLECTION TIMEPOINT: <strong>AGUARDANDO DADOS</strong></span>
+                                    <span>LABORATORY RECORD</span>
+                                </div>
+
+                            </article>
+
+
+                            <!-- SLIDE 3: PROTEÍNAS E FUNÇÃO HEPÁTICA -->
+                            <article class="telemetry-slide"
+                                     data-study="OSD-575"
+                                     data-name="Liver and Protein Profile">
+
+                                <div class="slide-heading">
+                                    <div>
+                                        <span class="slide-index">03 / ORGAN FUNCTION</span>
+                                        <h2>Liver & Protein Profile</h2>
+                                    </div>
+
+                                    <span class="study-code">OSD-575</span>
+                                </div>
+
+                                <div class="metric-grid">
+
+                                    <div class="metric">
+                                        <span>ALBUMIN</span>
+                                        <strong>—</strong>
+                                        <small>g/dL</small>
+                                    </div>
+
+                                    <div class="metric">
+                                        <span>ALT</span>
+                                        <strong>—</strong>
+                                        <small>U/L</small>
+                                    </div>
+
+                                    <div class="metric">
+                                        <span>AST</span>
+                                        <strong>—</strong>
+                                        <small>U/L</small>
+                                    </div>
+
+                                    <div class="metric">
+                                        <span>BILIRUBIN</span>
+                                        <strong>—</strong>
+                                        <small>mg/dL</small>
+                                    </div>
+
+                                </div>
+
+                                <div class="slide-footer">
+                                    <span>COLLECTION TIMEPOINT: <strong>AGUARDANDO DADOS</strong></span>
+                                    <span>LABORATORY RECORD</span>
+                                </div>
+
+                            </article>
+
+                        </div>
+
+
+                        <!-- CONTROLES DO CICLO -->
+                        <div class="slide-controls">
+
+                            <button type="button" id="previous-slide"
+                                    aria-label="Indicador anterior">‹</button>
+
+                            <div class="slide-progress">
+                                <span class="progress-dot active"></span>
+                                <span class="progress-dot"></span>
+                                <span class="progress-dot"></span>
+                            </div>
+
+                            <span class="slide-counter" id="slide-counter">01 / 03</span>
+
+                            <button type="button" id="next-slide"
+                                    aria-label="Próximo indicador">›</button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- EXTREMIDADE DIREITA: TIMEPOINT -->
+                    <aside class="console-side console-right">
+
+                        <span class="data-label">MISSION TIMELINE</span>
+
+                        <div class="timeline-marker">
+                            <span class="timeline-line"></span>
+                            <div>
+                                <small>PRE-FLIGHT</small>
+                                <strong>L-92</strong>
+                            </div>
+                        </div>
+
+                        <div class="timeline-marker">
+                            <span class="timeline-line"></span>
+                            <div>
+                                <small>FLIGHT</small>
+                                <strong>R+1</strong>
+                            </div>
+                        </div>
+
+                        <div class="timeline-marker">
+                            <span class="timeline-line"></span>
+                            <div>
+                                <small>POST-FLIGHT</small>
+                                <strong>R+194</strong>
+                            </div>
+                        </div>
+
+                        <div class="side-footer">
+                            <span>DATASET</span>
+                            <strong>INSPIRATION4</strong>
+                        </div>
+
+                    </aside>
+
+                </div>
+
+            </section>
+
+
+            <!-- RODAPÉ DO VISOR -->
+            <footer class="visor-footer">
+
+                <span>MINDSPACE // SPACE HEALTH INTELLIGENCE</span>
+
+                <span class="footer-center">
+                    DATA MODE: HISTORICAL LABORATORY RESULTS
+                </span>
+
+                <span>HUD VERSION 1.0</span>
+
+            </footer>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // Relógio da interface
+    const clock = document.getElementById('visor-clock');
+
+    function updateClock() {
+        const now = new Date();
+
+        clock.textContent = now.toLocaleTimeString('pt-BR', {
+            hour12: false
+        });
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+
+    // Ciclo dos indicadores
+    const slides = document.querySelectorAll('.telemetry-slide');
+    const dots = document.querySelectorAll('.progress-dot');
+    const counter = document.getElementById('slide-counter');
+
+    const previousButton = document.getElementById('previous-slide');
+    const nextButton = document.getElementById('next-slide');
+
+    let currentSlide = 0;
+    let cycleTimer;
+
+    function showSlide(index) {
+
+        slides[currentSlide].classList.remove('active');
+        dots[currentSlide].classList.remove('active');
+
+        currentSlide = (index + slides.length) % slides.length;
+
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.add('active');
+
+        counter.textContent =
+            String(currentSlide + 1).padStart(2, '0') +
+            ' / ' +
+            String(slides.length).padStart(2, '0');
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function resetCycle() {
+        clearInterval(cycleTimer);
+        cycleTimer = setInterval(nextSlide, 7000);
+    }
+
+    previousButton.addEventListener('click', function () {
+        showSlide(currentSlide - 1);
+        resetCycle();
+    });
+
+    nextButton.addEventListener('click', function () {
+        nextSlide();
+        resetCycle();
+    });
+
+    resetCycle();
+
+});
+</script>
+
+{% endblock %}
+

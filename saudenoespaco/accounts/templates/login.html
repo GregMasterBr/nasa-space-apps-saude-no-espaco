@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block 'title' %}Login | MINDSPACE{% endblock %}</title>
+
+    {% block 'head' %}
+        <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    {% endblock %}
+</head> 
+
+<body>
+    <main class="container">
+
+        <header class="brand">
+            <h1>MINDSPACE</h1>
+            <p>SPACE HEALTH MONITORING</p>
+        </header>
+
+        <section class="login-card">
+            <h2>Bem-vindo(a) de volta</h2>
+
+            <p class="description">
+                Entre para acessar seu ambiente
+                de acompanhamento emocional.
+            </p>
+
+            {% if form.errors %}
+                <p class="error" role="alert">
+                    Usuário ou senha inválidos.
+                    Verifique seus dados e tente novamente.
+                </p>
+            {% endif %}
+
+            {% if next and user.is_authenticated %}
+                <p class="error" role="alert">
+                    Sua conta não possui autorização
+                    para acessar esta página.
+                </p>
+            {% endif %}
+
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+
+                <label for="id_username">Usuário</label>
+                <input
+                    type="text"
+                    name="username"
+                    id="id_username"
+                    placeholder="Digite seu usuário"
+                    value="{{ form.username.value|default:'' }}"
+                    autocomplete="username"
+                    required
+                    autofocus
+                >
+
+                <label for="id_password">Senha</label>
+                <input
+                    type="password"
+                    name="password"
+                    id="id_password"
+                    placeholder="Digite sua senha"
+                    autocomplete="current-password"
+                    required
+                >
+
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+
+                <button type="submit">ENTRAR</button>
+            </form>
+        </section>
+
+        <footer class="footer">
+            MINDSPACE · Emotional Well-being for Space Missions
+            <br><br>
+            Acesso restrito a usuários autorizados.
+        </footer>
+
+    </main>
+</body>
+</html>

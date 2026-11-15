@@ -1,0 +1,165 @@
+
+/* =========================================
+   MINDSPACE NAVBAR
+========================================= */
+
+.main-navbar {
+    width: 100%;
+    background: #091321;
+    border-bottom: 1px solid rgba(111, 153, 190, 0.18);
+    font-family: 'Manrope', sans-serif;
+}
+
+.navbar-content {
+    min-height: 82px;
+    padding: 0 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+/* BRAND */
+
+.navbar-brand-custom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.brand-symbol {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #48b9d0;
+    border-radius: 10px;
+    color: #65d6e9;
+    font-size: 22px;
+    font-weight: 800;
+    box-shadow: 0 0 18px rgba(72, 185, 208, 0.12);
+}
+
+.brand-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.brand-info strong {
+    color: #edf5fc;
+    font-size: 16px;
+    letter-spacing: 2px;
+    font-weight: 800;
+}
+
+.brand-info small {
+    color: #718ba4;
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 1.3px;
+}
+
+/* LINKS */
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.navbar-link {
+    min-height: 40px;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: #8da2b8;
+    text-decoration: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+}
+
+.navbar-link:hover {
+    color: #eaf8ff;
+    background: rgba(77, 173, 201, 0.08);
+    border-color: rgba(77, 173, 201, 0.15);
+}
+
+.navbar-link.active {
+    color: #65d6e9;
+    background: rgba(77, 173, 201, 0.10);
+    border-color: rgba(77, 173, 201, 0.22);
+}
+
+.nav-icon {
+    font-size: 15px;
+}
+
+/* SYSTEM STATUS */
+
+.navbar-system {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #7e9bb1;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.system-indicator {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #39d99a;
+    box-shadow: 0 0 9px rgba(57, 217, 154, 0.7);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+    .navbar-content {
+        padding: 15px 4%;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .navbar-links {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .navbar-system {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 500px) {
+    .navbar-content {
+        justify-content: center;
+    }
+
+    .navbar-brand-custom {
+        margin-right: auto;
+    }
+
+    .navbar-system {
+        font-size: 8px;
+    }
+
+    .navbar-link {
+        padding: 0 9px;
+        font-size: 9px;
+    }
+}

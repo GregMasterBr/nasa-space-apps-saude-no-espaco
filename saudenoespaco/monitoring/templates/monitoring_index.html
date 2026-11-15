@@ -1,0 +1,382 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block 'title' %}Check-in Emocional | MINDSPACE{% endblock %}
+
+{% block 'head' %}
+<link rel="stylesheet" href="{% static 'css/monitoring.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block 'body' %}
+
+<main class="monitoring-container">
+
+    <!-- HEADER -->
+    <section class="monitoring-hero">
+
+        <div class="hero-content">
+            <span class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                MINDSPACE / MONITORAMENTO EMOCIONAL
+            </span>
+
+            <h1>
+                Como você está
+                <span>se sentindo hoje?</span>
+            </h1>
+
+            <p>
+                Seu bem-estar é tão importante quanto sua saúde física.
+                Reserve alguns minutos para registrar como você está.
+            </p>
+        </div>
+
+        {% if subject %}
+        <div class="participant-card">
+            <div class="participant-avatar">🧑‍🚀</div>
+            <div>
+                <span>PARTICIPANTE</span>
+                <strong>{{ subject.subject_code }}</strong>
+            </div>
+            <span class="participant-status"></span>
+        </div>
+        {% endif %}
+
+    </section>
+
+
+    <!-- MENSAGENS -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+    {% if subject %}
+
+    <div class="monitoring-layout">
+
+        <!-- FORMULÁRIO -->
+        <section class="checkin-main">
+
+            <form method="POST">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+
+                <!-- HUMOR -->
+                <div class="monitoring-panel mood-panel">
+
+                    <div class="panel-heading">
+                        <div class="panel-icon purple-icon">✦</div>
+
+                        <div>
+                            <span class="panel-step">ETAPA 01</span>
+                            <h2>Seu estado emocional</h2>
+                            <p>Qual destas opções representa melhor seu humor?</p>
+                        </div>
+                    </div>
+
+                    <div class="mood-options">
+
+                        {% for value, label in form.fields.mood.choices %}
+
+                            <label class="mood-option">
+
+                                <input
+                                    type="radio"
+                                    name="mood"
+                                    value="{{ value }}"
+                                    {% if form.mood.value == value %}checked{% endif %}
+                                >
+
+                                <span class="mood-card">
+
+                                    <span class="mood-emoji">
+                                        {% if value == 'EXCELLENT' %}😁
+                                        {% elif value == 'GOOD' %}😊
+                                        {% elif value == 'NEUTRAL' %}😐
+                                        {% elif value == 'BAD' %}😕
+                                        {% elif value == 'VERY_BAD' %}😢
+                                        {% endif %}
+                                    </span>
+
+                                    <span class="mood-label">
+                                        {{ label }}
+                                    </span>
+
+                                    <span class="mood-check">✓</span>
+
+                                </span>
+
+                            </label>
+
+                        {% endfor %}
+
+                    </div>
+
+                    {% for error in form.mood.errors %}
+                        <small class="field-error">{{ error }}</small>
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- ESTRESSE E FADIGA -->
+                <div class="monitoring-panel">
+
+                    <div class="panel-heading">
+                        <div class="panel-icon blue-icon">◉</div>
+
+                        <div>
+                            <span class="panel-step">ETAPA 02</span>
+                            <h2>Como seu corpo está?</h2>
+                            <p>Avalie seus níveis de estresse e fadiga.</p>
+                        </div>
+                    </div>
+
+
+                    <div class="scale-grid">
+
+                        <div class="scale-card">
+
+                            <div class="scale-title">
+                                <div>
+                                    <span class="scale-symbol">⚡</span>
+                                    <h3>Estresse</h3>
+                                </div>
+
+                                <span class="scale-hint">1 a 5</span>
+                            </div>
+
+                            <p>Quanto estresse você está sentindo?</p>
+
+                            <div class="scale-input">
+                                {{ form.stress_level }}
+                            </div>
+
+                            <div class="scale-legend">
+                                <span>Muito baixo</span>
+                                <span>Muito alto</span>
+                            </div>
+
+                            {% for error in form.stress_level.errors %}
+                                <small class="field-error">{{ error }}</small>
+                            {% endfor %}
+
+                        </div>
+
+
+                        <div class="scale-card">
+
+                            <div class="scale-title">
+                                <div>
+                                    <span class="scale-symbol">🌙</span>
+                                    <h3>Fadiga</h3>
+                                </div>
+
+                                <span class="scale-hint">1 a 5</span>
+                            </div>
+
+                            <p>Qual seu nível de cansaço neste momento?</p>
+
+                            <div class="scale-input">
+                                {{ form.fatigue_level }}
+                            </div>
+
+                            <div class="scale-legend">
+                                <span>Sem fadiga</span>
+                                <span>Muito cansado</span>
+                            </div>
+
+                            {% for error in form.fatigue_level.errors %}
+                                <small class="field-error">{{ error }}</small>
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- EMOÇÕES -->
+                <div class="monitoring-panel">
+
+                    <div class="panel-heading">
+                        <div class="panel-icon pink-icon">♡</div>
+
+                        <div>
+                            <span class="panel-step">ETAPA 03</span>
+                            <h2>Quais emoções estão presentes?</h2>
+                            <p>Você pode selecionar mais de uma opção.</p>
+                        </div>
+                    </div>
+
+                    <div class="emotion-grid">
+
+                        {% for checkbox in form.emotions %}
+                            <label class="emotion-option">
+                                {{ checkbox.tag }}
+                                <span>{{ checkbox.choice_label }}</span>
+                            </label>
+                        {% endfor %}
+
+                    </div>
+
+                    {% for error in form.emotions.errors %}
+                        <small class="field-error">{{ error }}</small>
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- OBSERVAÇÕES -->
+                <div class="monitoring-panel">
+
+                    <div class="panel-heading">
+                        <div class="panel-icon green-icon">✎</div>
+
+                        <div>
+                            <span class="panel-step">ETAPA 04</span>
+                            <h2>Quer compartilhar algo?</h2>
+                            <p>Conte um pouco mais sobre como está se sentindo.</p>
+                        </div>
+                    </div>
+
+                    {{ form.notes }}
+
+                    {% for error in form.notes.errors %}
+                        <small class="field-error">{{ error }}</small>
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- BOTÃO -->
+                <div class="submit-area">
+
+                    <div class="privacy-note">
+                        <span>🔒</span>
+                        <p>Seus registros são vinculados ao seu perfil.</p>
+                    </div>
+
+                    <button type="submit" class="submit-checkin">
+                        Registrar meu check-in
+                        <span>→</span>
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- COLUNA LATERAL -->
+        <aside class="checkin-sidebar">
+
+            <div class="sidebar-intro">
+                <span class="sidebar-label">SEU ACOMPANHAMENTO</span>
+                <h2>Seu histórico emocional</h2>
+                <p>
+                    Acompanhe seus registros e observe como você tem se sentido.
+                </p>
+            </div>
+
+
+            <div class="history-panel">
+
+                <div class="history-heading">
+                    <h3>Registros recentes</h3>
+                    <span>{{ checkins|length }}</span>
+                </div>
+
+                {% for checkin in checkins %}
+
+                    <article class="history-item">
+
+                        <div class="history-timeline">
+                            <span></span>
+                        </div>
+
+                        <div class="history-content">
+
+                            <div class="history-date">
+                                {{ checkin.created_at|date:"d/m/Y" }}
+                                <span>{{ checkin.created_at|date:"H:i" }}</span>
+                            </div>
+
+                            <h4>{{ checkin.get_mood_display }}</h4>
+
+                            <div class="history-metrics">
+                                <span>⚡ {{ checkin.stress_level }}/5</span>
+                                <span>🌙 {{ checkin.fatigue_level }}/5</span>
+                            </div>
+
+                            {% if checkin.emotions %}
+                                <div class="history-tags">
+                                    {% for emotion in checkin.emotions %}
+                                        <span>{{ emotion }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            {% if checkin.notes %}
+                                <p class="history-note">
+                                    {{ checkin.notes|truncatechars:100 }}
+                                </p>
+                            {% endif %}
+
+                        </div>
+
+                    </article>
+
+                {% empty %}
+
+                    <div class="history-empty">
+                        <span>🌱</span>
+                        <h4>Seu histórico começa aqui</h4>
+                        <p>
+                            Seu primeiro registro aparecerá nesta área
+                            assim que você realizar o check-in.
+                        </p>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <div class="wellbeing-card">
+                <span>✧</span>
+                <h3>Uma pausa também faz parte da missão.</h3>
+                <p>
+                    Reconhecer suas emoções é um passo importante
+                    para cuidar de si mesmo.
+                </p>
+            </div>
+
+        </aside>
+
+    </div>
+
+    {% endif %}
+
+</main>
+
+{% endblock %}

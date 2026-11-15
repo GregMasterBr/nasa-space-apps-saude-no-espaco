@@ -1,0 +1,136 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block 'title' %}Astronaut Center | MINDSPACE{% endblock %}
+
+{% block 'head' %}
+<link rel="stylesheet" href="{% static 'css/astronaut_index.css' %}">
+{% endblock %}
+
+{% block 'body' %}
+
+<main class="astronaut-center container-fluid">
+
+    <!-- HEADER -->
+    <section class="center-header">
+
+        <div class="header-content">
+            <span class="center-eyebrow">
+                MINDSPACE / SPACE HEALTH INTELLIGENCE
+            </span>
+
+            <h1>Mission Control<span>.</span></h1>
+
+            <p>
+                Explore os perfis científicos e acompanhe os dados
+                de saúde coletados durante a missão Inspiration4.
+            </p>
+        </div>
+
+        <div class="mission-tag">
+            <span class="mission-pulse"></span>
+            INSPIRATION4 / 2021
+        </div>
+
+    </section>
+
+
+    <!-- INTRODUÇÃO -->
+    <section class="center-intro">
+
+        <div>
+            <span class="center-eyebrow">CREW MONITORING SYSTEM</span>
+
+            <h2>Research Subjects</h2>
+
+            <p>
+                Selecione um participante para acessar sua
+                visualização individual de saúde espacial.
+            </p>
+        </div>
+
+        <div class="subject-count">
+            <strong>{{ subjects|length }}</strong>
+            <span>PARTICIPANTES</span>
+        </div>
+
+    </section>
+
+
+    <!-- CARDS -->
+
+    <section class="subject-grid">
+
+        {% for card in cards %}
+
+            <article class="subject-card">
+
+                <div class="subject-image">
+
+                    {% if card.astronaut and card.astronaut.photo_url %}
+                        <img
+                            src="{% static card.astronaut.photo_url %}"
+                            alt="{{ card.astronaut.full_name }}"
+                        >
+                    {% endif %}
+
+                </div>
+
+                <div class="subject-information">
+
+                    <span>DATA AVAILABLE</span>
+
+                    <h3>RESEARCH SUBJECT</h3>
+
+                    <h2>{{ card.subject.subject_code }}</h2>
+                    <h4>{{card.astronaut.occupation}}</h4>
+                    <p>{{ card.subject.mission.name }}</p>
+
+                </div>
+
+                <div class="subject-card-footer">
+
+                    <a href="{% url 'visor_astronaut' %}?subject={{ card.subject.subject_code }}"
+                    class="subject-access">
+
+                        <span>ACESSAR VISEIRA</span>
+                        <i class="bi bi-arrow-up-right"></i>
+
+                    </a>
+
+                </div>
+
+            </article>
+
+        {% empty %}
+
+            <p>Nenhum participante científico cadastrado.</p>
+
+        {% endfor %}
+
+    </section>
+
+
+
+    <!-- FOOTER -->
+    <section class="center-bottom">
+
+        <div class="data-source">
+            <span class="center-eyebrow">SCIENTIFIC DATA SOURCE</span>
+
+            <strong>NASA OPEN SCIENCE DATA REPOSITORY</strong>
+
+            <span>INSPIRATION4 / HUMAN SPACEFLIGHT RESEARCH</span>
+        </div>
+
+        <a href="{% url 'dashboard' %}" class="dashboard-link">
+            <span>ACESSAR DASHBOARD CIENTÍFICO</span>
+            <i class="bi bi-arrow-right"></i>
+        </a>
+
+    </section>
+
+</main>
+
+{% endblock %}

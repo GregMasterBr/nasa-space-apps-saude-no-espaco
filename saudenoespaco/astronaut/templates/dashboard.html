@@ -1,0 +1,485 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block 'title' %}Dashboard | MINDSPACE{% endblock %}
+
+{% block 'head' %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block 'body' %}
+
+<main class="container-fluid dashboard-container py-4">
+
+    <!-- CABEÇALHO -->
+    <section class="dashboard-header mb-4">
+
+        <div>
+            <span class="dashboard-eyebrow">
+                MINDSPACE / HEALTH MONITORING
+            </span>
+
+            <h1>
+                Painel de acompanhamento
+            </h1>
+
+            <p>
+                Monitoramento científico e acompanhamento de saúde
+                durante missões espaciais.
+            </p>
+        </div>
+
+        <div class="participant-selector">
+
+            <label for="subject" class="form-label">
+                Participante científico
+            </label>
+
+            <form method="GET">
+                <select
+                    name="subject"
+                    id="subject"
+                    class="form-select"
+                    onchange="this.form.submit()"
+                >
+                    {% for item in subjects %}
+                        <option
+                            value="{{ item.subject_code }}"
+                            {% if item.id == selected_subject.id %}selected{% endif %}
+                        >
+                            {{ item.subject_code }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+
+        </div>
+
+    </section>
+
+
+    <!-- IDENTIFICAÇÃO -->
+    <section class="participant-banner mb-4">
+
+        <div class="participant-avatar">
+            <span>👨‍🚀</span>
+        </div>
+
+        <div class="participant-information">
+            <span class="dashboard-eyebrow">
+                PARTICIPANTE EM ACOMPANHAMENTO
+            </span>
+
+            <h2>{{ selected_subject.subject_code }}</h2>
+
+            <p>
+                Missão:
+                {{ selected_subject.mission.name|default:"Não informada" }}
+            </p>
+        </div>
+
+        <div class="participant-status">
+            <span class="status-dot"></span>
+            Dados científicos disponíveis
+        </div>
+
+    </section>
+
+
+    <!-- INDICADORES PRINCIPAIS -->
+    <section class="mb-5">
+
+        <div class="section-heading">
+            <div>
+                <span class="dashboard-eyebrow">VISÃO GERAL</span>
+                <h2>Indicadores do acompanhamento</h2>
+            </div>
+        </div>
+
+        <div class="row g-3">
+
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="metric-card">
+                    <div class="metric-top">
+                        <span class="metric-icon purple">📊</span>
+                        <span class="metric-label">TOTAL DE RESULTADOS</span>
+                    </div>
+
+                    <div class="metric-value">
+                        {{ total_records }}
+                    </div>
+
+                    <div class="metric-description">
+                        Resultados laboratoriais registrados
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="metric-card">
+                    <div class="metric-top">
+                        <span class="metric-icon blue">🧬</span>
+                        <span class="metric-label">PARÂMETROS</span>
+                    </div>
+
+                    <div class="metric-value">
+                        {{ total_parameters }}
+                    </div>
+
+                    <div class="metric-description">
+                        Parâmetros distintos identificados
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="metric-card">
+                    <div class="metric-top">
+                        <span class="metric-icon cyan">🗓️</span>
+                        <span class="metric-label">TIMEPOINTS</span>
+                    </div>
+
+                    <div class="metric-value">
+                        {{ total_timepoints }}
+                    </div>
+
+                    <div class="metric-description">
+                        Momentos de coleta registrados
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="metric-card">
+                    <div class="metric-top">
+                        <span class="metric-icon orange">⚠️</span>
+                        <span class="metric-label">FORA DA REFERÊNCIA</span>
+                    </div>
+
+                    <div class="metric-value">
+                        {{ out_of_range }}
+                    </div>
+
+                    <div class="metric-description">
+                        Resultados fora dos intervalos disponíveis
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ESTUDOS LABORATORIAIS -->
+    <section class="mb-5">
+
+        <div class="section-heading">
+            <div>
+                <span class="dashboard-eyebrow">DADOS LABORATORIAIS</span>
+                <h2>Estudos disponíveis</h2>
+                <p>
+                    Resultados importados da base científica da NASA OSDR.
+                </p>
+            </div>
+        </div>
+
+
+        <div class="row g-3">
+
+            <!-- CBC -->
+            <div class="col-12 col-lg-6">
+
+                <div class="study-card">
+
+                    <div class="study-header">
+                        <div>
+                            <span class="study-code">OSD-569</span>
+                            <h3>Hemograma completo</h3>
+                            <p>Complete Blood Count (CBC)</p>
+                        </div>
+
+                        <span class="study-icon">🩸</span>
+                    </div>
+
+                    <div class="study-statistics">
+
+                        <div>
+                            <span class="study-number">
+                                {{ total_cbc }}
+                            </span>
+                            <span class="study-description">
+                                Resultados
+                            </span>
+                        </div>
+
+                        <div>
+                            <span class="study-number">23</span>
+                            <span class="study-description">
+                                Parâmetros na base
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="study-footer">
+                        <span>Fonte: NASA OSDR</span>
+                        <span>Hematologia</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CMP -->
+            <div class="col-12 col-lg-6">
+
+                <div class="study-card">
+
+                    <div class="study-header">
+                        <div>
+                            <span class="study-code">OSD-575</span>
+                            <h3>Painel metabólico completo</h3>
+                            <p>Comprehensive Metabolic Panel (CMP)</p>
+                        </div>
+
+                        <span class="study-icon">🧪</span>
+                    </div>
+
+                    <div class="study-statistics">
+
+                        <div>
+                            <span class="study-number">
+                                {{ total_cmp }}
+                            </span>
+                            <span class="study-description">
+                                Resultados
+                            </span>
+                        </div>
+
+                        <div>
+                            <span class="study-number">19</span>
+                            <span class="study-description">
+                                Parâmetros na base
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="study-footer">
+                        <span>Fonte: NASA OSDR</span>
+                        <span>Amostra: Serum</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- REFERÊNCIAS LABORATORIAIS -->
+    <section class="mb-5">
+
+        <div class="section-heading">
+            <div>
+                <span class="dashboard-eyebrow">ANÁLISE LABORATORIAL</span>
+                <h2>Intervalos de referência</h2>
+                <p>
+                    Comparação dos resultados com os limites informados
+                    nos arquivos científicos.
+                </p>
+            </div>
+        </div>
+
+
+        <div class="reference-card">
+
+            <div class="reference-information">
+                <span class="reference-icon">🔬</span>
+
+                <div>
+                    <h3>Resultados com referência disponível</h3>
+                    <p>
+                        Resultados que possuem limite mínimo e máximo
+                        registrados na base.
+                    </p>
+                </div>
+            </div>
+
+            <div class="reference-total">
+                <strong>{{ records_with_reference }}</strong>
+                <span>resultados</span>
+            </div>
+
+            <div class="reference-warning">
+                <span>⚠</span>
+                <p>
+                    Resultados fora do intervalo de referência não representam,
+                    isoladamente, diagnóstico ou condição clínica.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- RESUMO DOS ESTUDOS -->
+    <section class="mb-5">
+
+        <div class="section-heading">
+            <div>
+                <span class="dashboard-eyebrow">BASE DE DADOS</span>
+                <h2>Resumo dos registros</h2>
+                <p>
+                    Distribuição dos dados laboratoriais do participante.
+                </p>
+            </div>
+        </div>
+
+
+        <div class="table-responsive records-table-container">
+
+            <table class="table align-middle mb-0">
+
+                <thead>
+                    <tr>
+                        <th>Estudo</th>
+                        <th>Tipo de exame</th>
+                        <th>Resultados</th>
+                        <th>Parâmetros</th>
+                        <th>Timepoints</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for study in study_summary %}
+
+                    <tr>
+                        <td>
+                            <span class="table-study-code">
+                                {{ study.study_code }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {% if study.test_type == 'CBC' %}
+                                Hemograma completo
+                            {% elif study.test_type == 'CMP' %}
+                                Painel metabólico
+                            {% else %}
+                                {{ study.test_type }}
+                            {% endif %}
+                        </td>
+
+                        <td>{{ study.total_records }}</td>
+
+                        <td>{{ study.total_parameters }}</td>
+
+                        <td>{{ study.total_timepoints }}</td>
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            Nenhum registro encontrado.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- MÓDULOS FUTUROS -->
+    <section class="mb-4">
+
+        <div class="section-heading">
+            <div>
+                <span class="dashboard-eyebrow">MÓDULOS DO MINDSPACE</span>
+                <h2>Outras áreas de acompanhamento</h2>
+                <p>
+                    Funcionalidades previstas para as próximas etapas.
+                </p>
+            </div>
+        </div>
+
+
+        <div class="row g-3">
+
+            <div class="col-12 col-md-4">
+                <div class="module-card">
+                    <span class="module-icon">🧠</span>
+                    <h3>Bem-estar emocional</h3>
+                    <p>
+                        Acompanhamento de aspectos emocionais e psicológicos.
+                    </p>
+                    <span class="module-status">
+                        Em desenvolvimento
+                    </span>
+                </div>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <div class="module-card">
+                    <span class="module-icon">❤️</span>
+                    <h3>Monitoramento fisiológico</h3>
+                    <p>
+                        Integração de dados fisiológicos e indicadores corporais.
+                    </p>
+                    <span class="module-status">
+                        Em desenvolvimento
+                    </span>
+                </div>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <div class="module-card">
+                    <span class="module-icon">📈</span>
+                    <h3>Evolução temporal</h3>
+                    <p>
+                        Visualização da evolução dos parâmetros ao longo da missão.
+                    </p>
+                    <span class="module-status">
+                        Próxima etapa
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- RODAPÉ INFORMATIVO -->
+    <footer class="dashboard-footer">
+        <p>
+            MINDSPACE — Sistema de acompanhamento de saúde em missões espaciais.
+        </p>
+
+        <span>
+            Dados científicos: NASA Open Science Data Repository (OSDR)
+        </span>
+    </footer>
+
+</main>
+
+{% endblock %}
