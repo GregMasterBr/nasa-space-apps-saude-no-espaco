@@ -91,12 +91,37 @@
 
                 <div class="subject-card-footer">
 
-                    <a href="{% url 'visor_astronaut' %}?subject={{ card.subject.subject_code }}"
-                    class="subject-access">
-
-                        <span>ACESSAR VISEIRA</span>
+                    <a
+                        href="{% url 'visor_astronaut' %}?subject={{ card.subject.subject_code }}"
+                        class="subject-access mb-2"
+                    >
+                        <span>ACCESS ASTRONAUT VISOR</span>
                         <i class="bi bi-arrow-up-right"></i>
+                    </a>
+                  
 
+                    {% if card.astronaut %}
+                        <a
+                            href="{% url 'family_communication' card.astronaut.id %}"
+                            class="subject-access mb-2"
+                        >
+                            <span>FAMILY COMMUNICATION</span>
+                            <i class="bi bi-people"></i>
+                        </a>
+                    {% endif %}
+                    <a
+                        href="{% url 'fake' %}?"
+                        class="subject-access mb-2"
+                    >
+                        <span>EMOTIONAL CONVERSATION</span>
+                        <i class="bi bi-heart-pulse"></i>
+                    </a>
+                    <a
+                        href="{% url 'home_monitoring' %}?subject={{ card.subject.subject_code }}"
+                        class="subject-access"
+                    >
+                        <span>EMOTIONAL MONITORING</span>
+                        <i class="bi bi-heart-pulse"></i>
                     </a>
 
                 </div>

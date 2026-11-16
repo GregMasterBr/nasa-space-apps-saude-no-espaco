@@ -1,0 +1,254 @@
+
+{% extends 'base_visor.html' %}
+{% load static %}
+
+{% block 'title' %}Wellbeing Session | MINDSPACE{% endblock %}
+
+{% block 'head' %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/communication_call.css' %}">
+{% endblock %}
+
+{% block 'body' %}
+
+<main class="visor-experience">
+
+    <!-- SPACE ENVIRONMENT -->
+    <div class="space-environment">
+        <div class="stars"></div>
+        <div class="earth-horizon"></div>
+        <div class="earth-glow"></div>
+    </div>
+
+    <!-- HELMET FRAME -->
+    <div class="helmet-frame"></div>
+
+    <!-- TOP HUD -->
+    <header class="visor-topbar">
+
+        <div class="visor-brand">
+            <span class="brand-symbol">M</span>
+            <div>
+                <strong>MINDSPACE</strong>
+                <small>CREW WELLBEING SYSTEM</small>
+            </div>
+        </div>
+
+        <div class="mission-indicator">
+            <span class="hud-dot"></span>
+            <span>INSPIRATION4</span>
+            <span class="indicator-divider">/</span>
+            <span>ORBITAL ENVIRONMENT</span>
+        </div>
+
+        <a
+            href="{% url 'communication_history' astronaut.id %}"
+            class="history-link"
+        >
+            SESSION HISTORY ↗
+        </a>
+
+    </header>
+
+
+    <!-- HUD INFORMATION -->
+    <section class="visor-telemetry">
+
+        <div class="telemetry-block">
+            <small>MISSION PARTICIPANT</small>
+            <strong>{{ astronaut.full_name }}</strong>
+            <span>CREW MEMBER</span>
+        </div>
+
+        <div class="telemetry-block telemetry-center">
+            <small>WELLBEING SESSION</small>
+            <strong>FAMILY CONNECTION</strong>
+            <span>PERSONAL REFLECTION MODE</span>
+        </div>
+
+        <div class="telemetry-block telemetry-right">
+            <small>SESSION ELAPSED</small>
+            <strong id="session-duration"
+                data-started-at="{{ call.started_at|date:'c' }}">
+                00:00:00
+            </strong>
+            <span>LOCAL SESSION TIMER</span>
+        </div>
+
+    </section>
+
+
+    <!-- FIRST PERSON VIEW -->
+    <section class="visor-main">
+
+        <div class="visor-reticle">
+            <span></span>
+        </div>
+
+        <div class="visor-scene-label">
+            <span class="scene-line"></span>
+            <div>
+                <small>VISUAL ENVIRONMENT</small>
+                <strong>EARTH OBSERVATION</strong>
+            </div>
+        </div>
+
+
+        <!-- PERSONAL CONNECTION PANEL -->
+        <div class="family-panel">
+
+            <div class="panel-topline">
+                <span>PERSONAL CONNECTION</span>
+                <span class="panel-indicator">ACTIVE</span>
+            </div>
+
+            <div class="family-profile">
+
+                <div class="family-photo">
+                    {% if contact.photo_url %}
+                        <img
+                            src="{% static contact.photo_url %}"
+                            alt="{{ contact.name }}"
+                        >
+                    {% else %}
+                        <span>{{ contact.name|first|upper }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="family-information">
+                    <small>YOUR LOVED ONE</small>
+                    <h2>{{ contact.name }}</h2>
+                    <p>{{ contact.relationship|default:"Family member" }}</p>
+                </div>
+
+            </div>
+
+            <div class="family-message">
+                <span class="message-symbol">♡</span>
+                <p>
+                    Take a moment to reflect on the people
+                    who make you feel connected, supported
+                    and at home.
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- SESSION INSTRUCTIONS -->
+        <div class="reflection-panel">
+
+            <span class="reflection-eyebrow">
+                MINDSPACE / EMOTIONAL SUPPORT
+            </span>
+
+            <h1>
+                A moment to reconnect<span>.</span>
+            </h1>
+
+            <p>
+                Your well-being matters, even millions of miles away.
+                Use this moment to reflect on your emotional state
+                and the importance of your personal connections.
+            </p>
+
+            <div class="reflection-status">
+                <span class="status-circle"></span>
+                WELLBEING REFLECTION IN PROGRESS
+            </div>
+
+        </div>
+
+
+        <!-- ASTRONAUT HUD -->
+        <div class="visor-bottom-hud">
+
+            <div class="hud-data">
+                <small>MODULE</small>
+                <strong>FAMILY CONNECTION</strong>
+            </div>
+
+            <div class="hud-data hud-data-center">
+                <small>ACTIVITY</small>
+                <strong>EMOTIONAL WELLBEING</strong>
+            </div>
+
+            <div class="hud-data hud-data-right">
+                <small>SYSTEM</small>
+                <strong>OPERATIONAL</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SESSION ACTIONS -->
+    <footer class="visor-actions">
+
+        <div class="action-description">
+            <span class="action-icon">✦</span>
+            <div>
+                <strong>YOUR WELLBEING MATTERS</strong>
+                <small>Take your time. This moment is yours.</small>
+            </div>
+        </div>
+
+        <form method="POST" class="end-session-form">
+            {% csrf_token %}
+
+            <button type="submit" class="end-session-button">
+                <span>✓</span>
+                COMPLETE SESSION
+            </button>
+        </form>
+
+    </footer>
+
+
+    <div class="visor-footer">
+        <span>MINDSPACE / SPACE HEALTH INTELLIGENCE</span>
+        <span>FIRST-PERSON HUD EXPERIENCE / WELLBEING MODULE</span>
+    </div>
+
+</main>
+
+
+<script>
+    // SESSION TIMER
+    const durationElement = document.getElementById('session-duration');
+
+    const startedAt = new Date(durationElement.dataset.startedAt);
+
+    function updateSessionDuration() {
+
+        const now = new Date();
+
+        const elapsed = Math.max(
+            0,
+            Math.floor((now - startedAt) / 1000)
+        );
+
+        const hours = String(
+            Math.floor(elapsed / 3600)
+        ).padStart(2, '0');
+
+        const minutes = String(
+            Math.floor((elapsed % 3600) / 60)
+        ).padStart(2, '0');
+
+        const seconds = String(
+            elapsed % 60
+        ).padStart(2, '0');
+
+        durationElement.textContent =
+            `${hours}:${minutes}:${seconds}`;
+    }
+
+    updateSessionDuration();
+    setInterval(updateSessionDuration, 1000);
+</script>
+
+{% endblock %}

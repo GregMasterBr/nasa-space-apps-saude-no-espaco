@@ -363,3 +363,208 @@ class HealthRecord(models.Model):
 
     def __str__(self):
         return f'{self.subject} - {self.parameter}'
+
+
+class FamilyContact(models.Model):
+
+    astronaut = models.ForeignKey(
+        'Astronaut',
+        on_delete=models.CASCADE,
+        related_name='family_contacts',
+        verbose_name='Astronauta'
+    )
+
+    name = models.CharField(
+        max_length=150,
+        verbose_name='Nome do familiar'
+    )
+
+    relationship = models.CharField(
+        max_length=100,
+        verbose_name='Grau de parentesco'
+    )
+
+    photo_url = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name='Caminho da fotografia'
+    )
+    is_primary = models.BooleanField(
+        default=False,
+        verbose_name='Contato principal'
+    )
+
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='Contato ativo'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Contato familiar'
+        verbose_name_plural = 'Contatos familiares'
+
+    def __str__(self):
+        return f'{self.name} - {self.astronaut.full_name}'
+
+
+class CommunicationCall(models.Model):
+
+    class Status(models.TextChoices):
+        SCHEDULED = 'SCHEDULED', 'Scheduled'
+        IN_PROGRESS = 'IN_PROGRESS', 'In Progress'
+        COMPLETED = 'COMPLETED', 'Completed'
+        MISSED = 'MISSED', 'Missed'
+        CANCELLED = 'CANCELLED', 'Cancelled'
+
+    astronaut = models.ForeignKey(
+        'Astronaut',
+        on_delete=models.CASCADE,
+        related_name='communication_calls',
+        verbose_name='Astronauta'
+    )
+
+    contact = models.ForeignKey(
+        FamilyContact,
+        on_delete=models.PROTECT,
+        related_name='calls',
+        verbose_name='Contato familiar'
+    )
+
+    scheduled_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='Data agendada'
+    )
+
+    started_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='Início da chamada'
+    )
+
+    ended_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='Fim da chamada'
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.SCHEDULED,
+        verbose_name='Status'
+    )
+
+    notes = models.TextField(
+        blank=True,
+        verbose_name='Observações'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Chamada de comunicação'
+        verbose_name_plural = 'Chamadas de comunicação'
+
+    def __str__(self):
+        return f'{self.astronaut.full_name} - {self.contact.name}'
+
+
+class CommunicationChecklist(models.Model):
+
+    class ChecklistType(models.TextChoices):
+        PRE_CALL = 'PRE_CALL', 'Pre-call'
+        POST_CALL = 'POST_CALL', 'Post-call'
+        DAILY = 'DAILY', 'Daily Wellness'
+
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', 'Pending'
+        IN_PROGRESS = 'IN_PROGRESS', 'In Progress'
+        COMPLETED = 'COMPLETED', 'Completed'
+
+    astronaut = models.ForeignKey(
+        'Astronaut',
+        on_delete=models.CASCADE,
+        related_name='communication_checklists',
+        verbose_name='Astronauta'
+    )
+
+    call = models.ForeignKey(
+        CommunicationCall,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='checklists',
+        verbose_name='Chamada relacionada'
+    )
+
+    checklist_type = models.CharField(
+        max_length=20,
+        choices=ChecklistType.choices,
+        verbose_name='Tipo de checklist'
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+        verbose_name='Status'
+    )
+
+    completed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='Data de conclusão'
+    )
+
+    notes = models.TextField(
+        blank=True,
+        verbose_name='Observações'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Checklist de comunicação'
+        verbose_name_plural = 'Checklists de comunicação'
+
+    def __str__(self):
+        return f'{self.astronaut.full_name} - {self.get_checklist_type_display()}'
+
+
+class CommunicationChecklistItem(models.Model):
+
+    checklist = models.ForeignKey(
+        CommunicationChecklist,
+        on_delete=models.CASCADE,
+        related_name='items',
+        verbose_name='Checklist'
+    )
+
+    description = models.CharField(
+        max_length=255,
+        verbose_name='Descrição do item'
+    )
+
+    is_completed = models.BooleanField(
+        default=False,
+        verbose_name='Concluído'
+    )
+
+    order = models.PositiveIntegerField(
+        default=0,
+        verbose_name='Ordem'
+    )
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = 'Item do checklist'
+        verbose_name_plural = 'Itens do checklist'
+
+    def __str__(self):
+        return self.description

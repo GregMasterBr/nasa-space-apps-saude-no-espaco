@@ -1,0 +1,359 @@
+{% extends 'base_visor.html' %}
+{% load static %}
+
+{% block 'title' %}Communication History | MINDSPACE{% endblock %}
+
+{% block 'head' %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    .history-page {
+        min-height: 100vh;
+        padding: 35px;
+        background: #080f1d;
+        color: #e8eef8;
+        font-family: 'Manrope', sans-serif;
+    }
+
+    .history-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .history-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 38px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #243247;
+    }
+
+    .history-eyebrow {
+        color: #65c8e8;
+        font: 12px 'DM Mono', monospace;
+        letter-spacing: 2px;
+    }
+
+    .history-topbar h1 {
+        margin: 8px 0 0;
+        font-size: clamp(25px, 4vw, 36px);
+        font-weight: 800;
+    }
+
+    .history-back {
+        padding: 11px 17px;
+        border: 1px solid #34465e;
+        border-radius: 7px;
+        color: #dce8f7;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .5px;
+        transition: .2s;
+    }
+
+    .history-back:hover {
+        background: #17283d;
+        border-color: #65c8e8;
+        color: #fff;
+    }
+
+    .history-section {
+        margin-bottom: 35px;
+    }
+
+    .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 17px;
+    }
+
+    .section-heading h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .section-label {
+        color: #8192a9;
+        font: 11px 'DM Mono', monospace;
+        letter-spacing: 1px;
+    }
+
+    .history-card {
+        margin-bottom: 12px;
+        padding: 20px;
+        border: 1px solid #24354b;
+        border-radius: 10px;
+        background: #101b2b;
+    }
+
+    .call-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .contact-name {
+        margin: 0 0 5px;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .contact-relationship {
+        color: #8fa2ba;
+        font-size: 12px;
+    }
+
+    .call-status {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 20px;
+        background: #193b32;
+        color: #78dfb1;
+        font: 10px 'DM Mono', monospace;
+        letter-spacing: .7px;
+    }
+
+    .call-status.missed,
+    .call-status.cancelled {
+        background: #43252b;
+        color: #ff929c;
+    }
+
+    .call-status.scheduled {
+        background: #3b3420;
+        color: #f0d17a;
+    }
+
+    .call-status.in_progress {
+        background: #17374a;
+        color: #78d8f5;
+    }
+
+    .call-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 25px;
+        margin-top: 19px;
+        padding-top: 15px;
+        border-top: 1px solid #26364a;
+    }
+
+    .detail-item small {
+        display: block;
+        margin-bottom: 5px;
+        color: #8295ad;
+        font: 10px 'DM Mono', monospace;
+        letter-spacing: .8px;
+    }
+
+    .detail-item strong {
+        color: #dce7f5;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .call-notes {
+        margin-top: 15px;
+        color: #aebdd0;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    .empty-state {
+        padding: 35px 20px;
+        border: 1px dashed #34465e;
+        border-radius: 10px;
+        color: #91a2b8;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    .checklist-card h3 {
+        margin: 0 0 8px;
+        font-size: 15px;
+    }
+
+    .checklist-meta {
+        margin-bottom: 15px;
+        color: #8fa2ba;
+        font: 10px 'DM Mono', monospace;
+    }
+
+    .checklist-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 0;
+        border-top: 1px solid #24354b;
+        color: #c3cfdd;
+        font-size: 12px;
+    }
+
+    .check-icon {
+        color: #70d6a8;
+        font-size: 15px;
+    }
+
+    .pending-icon {
+        color: #d8b86a;
+    }
+
+    @media (max-width: 650px) {
+        .history-page {
+            padding: 22px 15px;
+        }
+
+        .history-topbar {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .call-card-header {
+            flex-direction: column;
+        }
+
+        .call-details {
+            gap: 16px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block 'body' %}
+<main class="history-page">
+    <div class="history-container">
+
+        <header class="history-topbar">
+            <div>
+                <div class="history-eyebrow">MINDSPACE / CREW WELLBEING</div>
+                <h1>Communication History</h1>
+            </div>
+
+            <a
+                href="{% url 'family_communication' astronaut.id %}"
+                class="history-back"
+            >
+                BACK TO CONTACTS
+            </a>
+        </header>
+
+        <section class="history-section">
+            <div class="section-heading">
+                <h2>Family Calls</h2>
+                <span class="section-label">COMMUNICATION RECORDS</span>
+            </div>
+
+            {% for call in calls %}
+                <article class="history-card">
+                    <div class="call-card-header">
+                        <div>
+                            <h3 class="contact-name">{{ call.contact.name }}</h3>
+                            <div class="contact-relationship">
+                                {{ call.contact.relationship|default:"Family contact" }}
+                            </div>
+                        </div>
+
+                        <span class="call-status {{ call.status|lower }}">
+                            {{ call.get_status_display|upper }}
+                        </span>
+                    </div>
+
+                    <div class="call-details">
+                        <div class="detail-item">
+                            <small>DATE</small>
+                            <strong>{{ call.scheduled_at|date:"d/m/Y" }}</strong>
+                        </div>
+
+                        <div class="detail-item">
+                            <small>START TIME</small>
+                            <strong>
+                                {% if call.started_at %}
+                                    {{ call.started_at|date:"H:i" }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </strong>
+                        </div>
+
+                        <div class="detail-item">
+                            <small>END TIME</small>
+                            <strong>
+                                {% if call.ended_at %}
+                                    {{ call.ended_at|date:"H:i" }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </strong>
+                        </div>
+                    </div>
+
+                    {% if call.notes %}
+                        <div class="call-notes">
+                            {{ call.notes }}
+                        </div>
+                    {% endif %}
+                </article>
+            {% empty %}
+                <div class="empty-state">
+                    No communication records found for this astronaut.
+                </div>
+            {% endfor %}
+        </section>
+
+        <section class="history-section">
+            <div class="section-heading">
+                <h2>Communication Checklists</h2>
+                <span class="section-label">WELLBEING ROUTINE</span>
+            </div>
+
+            {% for checklist in checklists %}
+                <article class="history-card checklist-card">
+                    <h3>{{ checklist.get_checklist_type_display }}</h3>
+
+                    <div class="checklist-meta">
+                        STATUS: {{ checklist.get_status_display|upper }}
+                        {% if checklist.completed_at %}
+                            &nbsp; / &nbsp;
+                            COMPLETED: {{ checklist.completed_at|date:"d/m/Y H:i" }}
+                        {% endif %}
+                    </div>
+
+                    {% for item in checklist.items.all %}
+                        <div class="checklist-item">
+                            {% if item.is_completed %}
+                                <span class="check-icon">✓</span>
+                            {% else %}
+                                <span class="check-icon pending-icon">○</span>
+                            {% endif %}
+
+                            <span>{{ item.description }}</span>
+                        </div>
+                    {% empty %}
+                        <div class="call-notes">
+                            No checklist items registered.
+                        </div>
+                    {% endfor %}
+                </article>
+            {% empty %}
+                <div class="empty-state">
+                    No communication checklists registered.
+                </div>
+            {% endfor %}
+        </section>
+
+        <div class="section-label">
+            MINDSPACE SYSTEM / COMMUNICATION MODULE
+        </div>
+
+    </div>
+</main>
+{% endblock %}

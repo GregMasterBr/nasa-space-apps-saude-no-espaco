@@ -1,0 +1,392 @@
+
+{% extends 'base_visor.html' %}
+{% load static %}
+
+{% block 'title' %}Family Connection | MINDSPACE{% endblock %}
+
+{% block 'head' %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    .family-page {
+        min-height: 100vh;
+        padding: 35px;
+        background: #080f1d;
+        color: #e8eef8;
+        font-family: 'Manrope', sans-serif;
+    }
+
+    .family-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .family-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding-bottom: 25px;
+        margin-bottom: 35px;
+        border-bottom: 1px solid #243247;
+    }
+
+    .eyebrow {
+        color: #65c8e8;
+        font: 11px 'DM Mono', monospace;
+        letter-spacing: 2px;
+    }
+
+    .family-header h1 {
+        margin: 9px 0 0;
+        font-size: clamp(26px, 4vw, 36px);
+        font-weight: 800;
+    }
+
+    .header-status {
+        padding: 9px 13px;
+        border: 1px solid #285b4b;
+        border-radius: 6px;
+        color: #7de0b3;
+        font: 10px 'DM Mono', monospace;
+        letter-spacing: 1px;
+    }
+
+    .family-intro {
+        margin-bottom: 30px;
+    }
+
+    .family-intro h2 {
+        margin: 0 0 8px;
+        font-size: 19px;
+    }
+
+    .family-intro p {
+        max-width: 720px;
+        margin: 0;
+        color: #91a2b8;
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .connection-info {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 30px;
+        padding: 18px;
+        border: 1px solid #263b53;
+        border-radius: 9px;
+        background: #101e30;
+    }
+
+    .connection-info-icon {
+        color: #65c8e8;
+        font-size: 22px;
+    }
+
+    .connection-info strong {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 12px;
+    }
+
+    .connection-info p {
+        margin: 0;
+        color: #91a2b8;
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 18px;
+    }
+
+    .contact-option {
+        position: relative;
+        display: block;
+        cursor: pointer;
+    }
+
+    .contact-option input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .contact-card {
+        min-height: 260px;
+        padding: 22px;
+        border: 1px solid #293a50;
+        border-radius: 12px;
+        background: #101b2b;
+        text-align: center;
+        transition: .2s ease;
+    }
+
+    .contact-option:hover .contact-card {
+        border-color: #568ba8;
+        transform: translateY(-3px);
+    }
+
+    .contact-option input:checked + .contact-card {
+        border: 1px solid #65c8e8;
+        background: #14283a;
+        box-shadow: 0 0 0 2px #65c8e822;
+    }
+
+    .contact-photo {
+        width: 105px;
+        height: 105px;
+        margin: 5px auto 18px;
+        border: 2px solid #344b63;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #1c2d42;
+    }
+
+    .contact-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 105px;
+        height: 105px;
+        margin: 5px auto 18px;
+        border: 2px solid #344b63;
+        border-radius: 50%;
+        background: #1c2d42;
+        color: #65c8e8;
+        font-size: 32px;
+        font-weight: 800;
+    }
+
+    .contact-card h3 {
+        margin: 0 0 6px;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .contact-card p {
+        margin: 0;
+        color: #91a2b8;
+        font-size: 12px;
+    }
+
+    .primary-label {
+        display: inline-block;
+        margin-top: 13px;
+        padding: 5px 9px;
+        border-radius: 4px;
+        background: #1b3c36;
+        color: #83dfb8;
+        font: 9px 'DM Mono', monospace;
+        letter-spacing: 1px;
+    }
+
+    .selection-indicator {
+        display: block;
+        margin-top: 16px;
+        color: #65c8e8;
+        font: 10px 'DM Mono', monospace;
+        letter-spacing: 1px;
+        opacity: 0;
+    }
+
+    .contact-option input:checked + .contact-card .selection-indicator {
+        opacity: 1;
+    }
+
+    .family-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 25px;
+        border-top: 1px solid #243247;
+    }
+
+    .back-link {
+        color: #9aabc0;
+        text-decoration: none;
+        font-size: 12px;
+    }
+
+    .back-link:hover {
+        color: #fff;
+    }
+
+    .start-call {
+        padding: 14px 24px;
+        border: 0;
+        border-radius: 7px;
+        background: #65c8e8;
+        color: #071321;
+        font: 700 11px 'DM Mono', monospace;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .start-call:hover {
+        background: #91def4;
+        transform: translateY(-2px);
+    }
+
+    .empty-state {
+        padding: 45px 20px;
+        border: 1px dashed #34465e;
+        border-radius: 10px;
+        color: #91a2b8;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    @media (max-width: 650px) {
+        .family-page {
+            padding: 22px 15px;
+        }
+
+        .family-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .family-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .start-call {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block 'body' %}
+<main class="family-page">
+    <div class="family-container">
+
+        <header class="family-header">
+            <div>
+                <div class="eyebrow">MINDSPACE / CREW WELLBEING</div>
+                <h1>Family Connection</h1>
+            </div>
+
+            <div class="header-status">
+                ● WELLBEING MODULE
+            </div>
+        </header>
+
+        <section class="family-intro">
+            <h2>Stay connected with what matters</h2>
+
+            <p>
+                Emotional well-being is closely connected to our relationships.
+                Choose a loved one as your reference for this well-being session
+                and take a moment to reflect on your emotional state.
+            </p>
+        </section>
+
+        <div class="connection-info">
+            <div class="connection-info-icon">♡</div>
+
+            <div>
+                <strong>Family Wellbeing Session</strong>
+                <p>
+                    This is a guided well-being activity, not a phone or video call.
+                    Select a family member to personalize your reflection session
+                    and continue to the emotional well-being checklist.
+                </p>
+            </div>
+        </div>
+
+        {% if contacts %}
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="contact-grid">
+
+                    {% for contact in contacts %}
+                        <label class="contact-option">
+
+                            <input
+                                type="radio"
+                                name="contact"
+                                value="{{ contact.id }}"
+                                required
+                            >
+
+                            <div class="contact-card">
+
+                                {% if contact.photo_url %}
+                                    <img
+                                        src="{% static contact.photo_url %}"
+                                        alt="{{ contact.name }}"
+                                        class="contact-photo"
+                                    >
+                                {% else %}
+                                    <div class="contact-placeholder">
+                                        {{ contact.name|first|upper }}
+                                    </div>
+                                {% endif %}
+
+                                <h3>{{ contact.name }}</h3>
+
+                                <p>
+                                    {{ contact.relationship|default:"Family Contact" }}
+                                </p>
+
+                                {% if contact.is_primary %}
+                                    <span class="primary-label">
+                                        PRIMARY CONTACT
+                                    </span>
+                                {% endif %}
+
+                                <span class="selection-indicator">
+                                    ✓ SELECTED
+                                </span>
+
+                            </div>
+                        </label>
+                    {% endfor %}
+
+                </div>
+
+                <div class="family-actions">
+
+                    <a
+                        href="{% url 'communication_history' astronaut.id %}"
+                        class="back-link"
+                    >
+                        VIEW SESSION HISTORY →
+                    </a>
+
+                    <button type="submit" class="start-call">
+                        START WELLBEING SESSION →
+                    </button>
+
+                </div>
+
+            </form>
+
+        {% else %}
+
+            <div class="empty-state">
+                <h3>No family contacts available</h3>
+                <p>
+                    No active family contacts have been registered
+                    for this astronaut.
+                </p>
+            </div>
+
+        {% endif %}
+
+    </div>
+</main>
+{% endblock %}

@@ -1,10 +1,18 @@
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 from django.contrib import messages
 from django.contrib.messages import constants
 from django.db.models import Count
 from django.db import models
-from .models import ResearchSubject, HealthRecord, Astronaut
+from .models import (
+    ResearchSubject,
+    HealthRecord,
+    Astronaut,
+    FamilyContact,
+    CommunicationCall,
+    CommunicationChecklist,
+)
 import random
 
 def astronaut_index(request):
@@ -284,3 +292,130 @@ def visor_astronaut(request):
     }
 
     return render(request, 'visor.html', context)
+
+
+
+def family_communication(request, astronaut_id):
+
+    astronaut = get_object_or_404(
+        Astronaut,
+        id=astronaut_id
+    )
+
+    contacts = FamilyContact.objects.filter(
+        astronaut=astronaut,
+        is_active=True
+    )
+
+    if request.method == 'POST':
+
+        contact_id = request.POST.get('contact')
+
+        contact = get_object_or_404(
+            FamilyContact,
+            id=contact_id,
+            astronaut=astronaut,
+            is_active=True
+        )
+
+        call = CommunicationCall.objects.create(
+            astronaut=astronaut,
+            contact=contact,
+            status=CommunicationCall.Status.IN_PROGRESS,
+            started_at=timezone.now()
+        )
+
+        return redirect(
+            'communication_call',
+            astronaut_id=astronaut.id,
+            call_id=call.id
+        )
+
+    context = {
+        'astronaut': astronaut,
+        'contacts': contacts,
+    }
+
+    return render(
+        request,
+        'family_communication.html',
+        context
+    )
+
+
+def communication_call(request, astronaut_id, call_id):
+
+    astronaut = get_object_or_404(
+        Astronaut,
+        id=astronaut_id
+    )
+
+    call = get_object_or_404(
+        CommunicationCall.objects.select_related('contact'),
+        id=call_id,
+        astronaut=astronaut
+    )
+
+    if request.method == 'POST':
+
+        if call.status == CommunicationCall.Status.IN_PROGRESS:
+
+            call.status = CommunicationCall.Status.COMPLETED
+            call.ended_at = timezone.now()
+
+            call.save(update_fields=[
+                'status',
+                'ended_at'
+            ])
+
+            return redirect(
+                'communication_history',
+                astronaut_id=astronaut.id
+            )
+
+    context = {
+        'astronaut': astronaut,
+        'call': call,
+        'contact': call.contact,
+    }
+
+    return render(
+        request,
+        'communication_call.html',
+        context
+    )
+
+
+def communication_history(request, astronaut_id):
+
+    astronaut = get_object_or_404(
+        Astronaut,
+        id=astronaut_id
+    )
+
+    calls = CommunicationCall.objects.filter(
+        astronaut=astronaut
+    ).select_related(
+        'contact'
+    ).order_by('-created_at')
+
+    checklists = CommunicationChecklist.objects.filter(
+        astronaut=astronaut
+    ).prefetch_related(
+        'items'
+    )
+
+    context = {
+        'astronaut': astronaut,
+        'calls': calls,
+        'checklists': checklists,
+    }
+
+    return render(
+        request,
+        'communication_history.html',
+        context
+    )
+
+def fake(request):
+    return render(request,'fake_comunication.html')
